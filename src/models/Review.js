@@ -1,0 +1,28 @@
+const mongoose = require("mongoose");
+
+const reviewSchema = new mongoose.Schema({
+  productId: {
+    type: String,
+    required: true,
+    index: true
+  },
+  userId: {
+    type: String,
+    required: true
+  },
+  rating: {
+    type: Number,
+    required: true,
+    min: 1,
+    max: 5
+  },
+  comment: {
+    type: String,
+    trim: true
+  }
+}, { timestamps: true });
+
+// Prevent duplicate review per user per product
+reviewSchema.index({ productId: 1, userId: 1 }, { unique: true });
+
+module.exports = mongoose.model("Review", reviewSchema);
