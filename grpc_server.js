@@ -1,10 +1,10 @@
-'use strict';
-const connectDB = require("./src/config/db");
+// grpc_server.js
+require('dotenv').config();
 const grpc = require('@grpc/grpc-js');
-const { ReviewServiceService } = require('./generated/review/review_grpc_pb');
+const { ReviewServiceService } = require('./app/generated/review/review_grpc_pb');
 const reviewHandlers = require('./review.handler');
 
-function startServer() {
+function startGRPCServer() {
   const server = new grpc.Server();
 
   server.addService(ReviewServiceService, {
@@ -15,23 +15,15 @@ function startServer() {
     deleteReview: reviewHandlers.deleteReview,
   });
 
-  const PORT = process.env.GRPC_PORT || '50051';
-  const address = `0.0.0.0:${PORT}`;
+  const address = `0.0.0.0:${process.env.GRPC_PORT || 50051}`;
 
-  server.bindAsync(
-    address,
-    grpc.ServerCredentials.createInsecure(),
-    (err, port) => {
-      if (err) {
-        console.error('Failed to bind gRPC server:', err);
-        process.exit(1);
-      }
-
-      console.log(`gRPC ReviewService running on ${address}`);
-      connectDB();
-      server.start();
+  server.bindAsync(address, grpc.ServerCredentials.createInsecure(), (err, port) => {
+    if (err) {
+      console.error('Failed to bind gRPC server:', err);
+      process.exit(1);
     }
-  );
+    console.log(`gRPC server running on ${address}`);
+  });
 }
 
-startServer();
+module.exports = startGRPCServer;

@@ -1,11 +1,12 @@
+
 require('dotenv').config();
 const app = require('./src/app');
-const mongoose = require('mongoose');
 
-mongoose.connect(process.env.MONGO_URI)
-.then(() => {
-    console.log("MongoDB Connected");
-    app.listen(process.env.PORT, () =>
-        console.log(`Server running on ${process.env.PORT}`)
-    );
-});
+function startRESTServer() {
+  const port = process.env.REST_PORT || 5000;
+  app.listen(port, () => {
+    console.log(`REST server running on port ${port}`);
+  });
+}
+
+module.exports = startRESTServer;

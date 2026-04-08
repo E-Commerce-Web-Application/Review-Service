@@ -1,4 +1,4 @@
-// source: shop/shop.proto
+// source: app/generated/shop/shop.proto
 /**
  * @fileoverview
  * @enhanceable

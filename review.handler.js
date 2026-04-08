@@ -1,15 +1,9 @@
-'use strict';
-
 const grpc = require('@grpc/grpc-js');
-const reviewPb = require('./generated/review/review_pb');
+const reviewPb = require('./app/generated/review/review_pb.js');
 const { Timestamp } = require('google-protobuf/google/protobuf/timestamp_pb.js');
+const Review = require('./src/models/Review.js'); // Mongoose model
 
-// Simple in-memory store for testing
-const reviews = [];
-
-/**
- * Create protobuf Timestamp from JS Date
- */
+// Convert JS Date to protobuf Timestamp
 function toTimestamp(date = new Date()) {
   const ts = new Timestamp();
   const millis = date.getTime();
@@ -18,43 +12,28 @@ function toTimestamp(date = new Date()) {
   return ts;
 }
 
-/**
- * Build Review protobuf message from plain JS object
- */
-function buildReviewMessage(data) {
+// Build protobuf Review message from Mongoose doc
+function buildReviewMessage(doc) {
   const review = new reviewPb.Review();
-  review.setId(data.id);
-  review.setProductId(data.productId);
-  review.setUserId(data.userId);
-  review.setRating(data.rating);
-  review.setComment(data.comment || '');
-  review.setCreatedAt(toTimestamp(data.createdAt));
-  review.setUpdatedAt(toTimestamp(data.updatedAt));
+  review.setId(doc._id.toString());
+  review.setProductId(doc.productId);
+  review.setUserId(doc.userId);
+  review.setRating(doc.rating);
+  review.setComment(doc.comment || '');
+  review.setCreatedAt(toTimestamp(doc.createdAt));
+  review.setUpdatedAt(toTimestamp(doc.updatedAt));
   return review;
 }
 
-/**
- * Basic validation helpers
- */
+// Validate rating
 function validateRating(rating) {
   return Number.isInteger(rating) && rating >= 1 && rating <= 5;
 }
 
-function generateId() {
-  return `rev_${Date.now()}_${Math.floor(Math.random() * 10000)}`;
-}
-
-/**
- * RPC: CreateReview
- */
-function createReview(call, callback) {
+// RPC: CreateReview
+async function createReview(call, callback) {
   try {
-    const request = call.request;
-
-    const productId = request.getProductId();
-    const userId = request.getUserId();
-    const rating = request.getRating();
-    const comment = request.getComment();
+    const { productId, userId, rating, comment } = call.request.toObject();
 
     if (!productId || !userId) {
       return callback({
@@ -70,39 +49,20 @@ function createReview(call, callback) {
       });
     }
 
-    const now = new Date();
-
-    const newReview = {
-      id: generateId(),
-      productId,
-      userId,
-      rating,
-      comment,
-      createdAt: now,
-      updatedAt: now,
-    };
-
-    reviews.push(newReview);
-
-    return callback(null, buildReviewMessage(newReview));
-  } catch (error) {
-    return callback({
+    const review = await Review.create({ productId, userId, rating, comment });
+    callback(null, buildReviewMessage(review));
+  } catch (err) {
+    callback({
       code: grpc.status.INTERNAL,
-      message: error.message || 'Failed to create review',
+      message: err.message || 'Failed to create review',
     });
   }
 }
 
-/**
- * RPC: GetReviewsByProduct
- */
-function getReviewsByProduct(call, callback) {
+// RPC: GetReviewsByProduct
+async function getReviewsByProduct(call, callback) {
   try {
-    const request = call.request;
-
-    const productId = request.getProductId();
-    let page = request.getPage();
-    let limit = request.getLimit();
+    const { productId, page } = call.request.toObject();
 
     if (!productId) {
       return callback({
@@ -111,33 +71,31 @@ function getReviewsByProduct(call, callback) {
       });
     }
 
-    page = page > 0 ? page : 1;
-    limit = limit > 0 ? limit : 10;
+    const p = page > 0 ? page : 1;
+    const limit = 5; // match REST controller
+    const skip = (p - 1) * limit;
 
-    const filtered = reviews.filter((r) => r.productId === productId);
-
-    const startIndex = (page - 1) * limit;
-    const paginated = filtered.slice(startIndex, startIndex + limit);
+    const docs = await Review.find({ productId })
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
 
     const response = new reviewPb.GetReviewsResponse();
-    response.setReviewsList(paginated.map(buildReviewMessage));
+    response.setReviewsList(docs.map(buildReviewMessage));
 
-    return callback(null, response);
-  } catch (error) {
-    return callback({
+    callback(null, response);
+  } catch (err) {
+    callback({
       code: grpc.status.INTERNAL,
-      message: error.message || 'Failed to fetch reviews',
+      message: err.message || 'Failed to fetch reviews',
     });
   }
 }
 
-/**
- * RPC: GetAverageRating
- */
-function getAverageRating(call, callback) {
+// RPC: GetAverageRating
+async function getAverageRating(call, callback) {
   try {
-    const request = call.request;
-    const productId = request.getProductId();
+    const { productId } = call.request.toObject();
 
     if (!productId) {
       return callback({
@@ -146,55 +104,57 @@ function getAverageRating(call, callback) {
       });
     }
 
-    const filtered = reviews.filter((r) => r.productId === productId);
-    const totalReviews = filtered.length;
+    const result = await Review.aggregate([
+      { $match: { productId } },
+      {
+        $group: {
+          _id: '$productId',
+          avgRating: { $avg: '$rating' },
+          totalReviews: { $sum: 1 },
+        },
+      },
+    ]);
 
-    const avgRating =
-      totalReviews === 0
-        ? 0
-        : filtered.reduce((sum, r) => sum + r.rating, 0) / totalReviews;
+    const data = result[0] || { avgRating: 0, totalReviews: 0 };
 
     const response = new reviewPb.AverageRatingResponse();
     response.setProductId(productId);
-    response.setAvgRating(avgRating);
-    response.setTotalReviews(totalReviews);
+    response.setAvgRating(data.avgRating);
+    response.setTotalReviews(data.totalReviews);
 
-    return callback(null, response);
-  } catch (error) {
-    return callback({
+    callback(null, response);
+  } catch (err) {
+    callback({
       code: grpc.status.INTERNAL,
-      message: error.message || 'Failed to calculate average rating',
+      message: err.message || 'Failed to calculate average rating',
     });
   }
 }
 
-/**
- * RPC: UpdateReview
- */
-function updateReview(call, callback) {
+// RPC: UpdateReview (no ownership check)
+async function updateReview(call, callback) {
   try {
-    const request = call.request;
+    const { id, rating, comment } = call.request.toObject();
 
-    const id = request.getId();
-    const userId = request.getUserId();
-    const rating = request.getRating();
-    const comment = request.getComment();
-
-    if (!id || !userId) {
+    if (!id) {
       return callback({
         code: grpc.status.INVALID_ARGUMENT,
-        message: 'id and user_id are required',
+        message: 'id is required',
       });
     }
 
-    if (!validateRating(rating)) {
+    if (rating && !validateRating(rating)) {
       return callback({
         code: grpc.status.INVALID_ARGUMENT,
         message: 'rating must be an integer between 1 and 5',
       });
     }
 
-    const review = reviews.find((r) => r.id === id);
+    const review = await Review.findByIdAndUpdate(
+      id,
+      { ...(rating && { rating }), ...(comment && { comment }), updatedAt: new Date() },
+      { new: true }
+    );
 
     if (!review) {
       return callback({
@@ -203,69 +163,43 @@ function updateReview(call, callback) {
       });
     }
 
-    if (review.userId !== userId) {
-      return callback({
-        code: grpc.status.PERMISSION_DENIED,
-        message: 'You can only update your own review',
-      });
-    }
-
-    review.rating = rating;
-    review.comment = comment;
-    review.updatedAt = new Date();
-
-    return callback(null, buildReviewMessage(review));
-  } catch (error) {
-    return callback({
+    callback(null, buildReviewMessage(review));
+  } catch (err) {
+    callback({
       code: grpc.status.INTERNAL,
-      message: error.message || 'Failed to update review',
+      message: err.message || 'Failed to update review',
     });
   }
 }
 
-/**
- * RPC: DeleteReview
- */
-function deleteReview(call, callback) {
+// RPC: DeleteReview (no ownership check)
+async function deleteReview(call, callback) {
   try {
-    const request = call.request;
+    const { id } = call.request.toObject();
 
-    const id = request.getId();
-    const userId = request.getUserId();
-
-    if (!id || !userId) {
+    if (!id) {
       return callback({
         code: grpc.status.INVALID_ARGUMENT,
-        message: 'id and user_id are required',
+        message: 'id is required',
       });
     }
 
-    const index = reviews.findIndex((r) => r.id === id);
+    const review = await Review.findByIdAndDelete(id);
 
-    if (index === -1) {
+    if (!review) {
       return callback({
         code: grpc.status.NOT_FOUND,
         message: 'Review not found',
       });
     }
 
-    if (reviews[index].userId !== userId) {
-      return callback({
-        code: grpc.status.PERMISSION_DENIED,
-        message: 'You can only delete your own review',
-      });
-    }
-
-    reviews.splice(index, 1);
-
     const response = new reviewPb.DeleteReviewResponse();
-    response.setMessage('Review deleted successfully');
-
-    return callback(null, response);
-  } catch (error) {
-    return callback({
+    response.setMessage('review_deleted');
+    callback(null, response);
+  } catch (err) {
+    callback({
       code: grpc.status.INTERNAL,
-      message: error.message || 'Failed to delete review',
+      message: err.message || 'Failed to delete review',
     });
   }
 }

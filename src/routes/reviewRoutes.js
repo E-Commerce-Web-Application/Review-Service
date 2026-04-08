@@ -7,10 +7,10 @@ const reviewController = require("../controllers/reviewController");
 router.post("/", reviewController.createReview);
 
 // Get reviews by product
-router.get("/product/:productId", reviewController.getReviewsByProduct);
+router.get("/:product_id", reviewController.getReviewsByProduct);
 
 // Get average rating
-router.get("/product/:productId/average", reviewController.getAverageRating);
+router.get("/:product_id/average", reviewController.getAverageRating);
 
 // Update review
 router.put("/:id",  reviewController.updateReview);

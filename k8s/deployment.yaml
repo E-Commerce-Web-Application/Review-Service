@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: review-service
+  namespace: review-service
+  labels:
+    app: review-service
+spec:
+  replicas: 2
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app: review-service
+  template:
+    metadata:
+      labels:
+        app: review-service
+    spec:
+      containers:
+        - name: review-service
+          image: review-service:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: rest
+              containerPort: 8002
+              protocol: TCP
+            - name: grpc
+              containerPort: 50052
+              protocol: TCP
+          env:
+            - name: REST_PORT
+              value: "8002"
+            - name: GRPC_PORT
+              value: "50052"
+            - name: MONGO_URI
+              valueFrom:
+                secretKeyRef:
+                  name: review-service-secret
+                  key: MONGO_URI
+          readinessProbe:
+            tcpSocket:
+              port: rest
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 2
+          livenessProbe:
+            tcpSocket:
+              port: rest
+            initialDelaySeconds: 30
+            periodSeconds: 20
+            timeoutSeconds: 2
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi

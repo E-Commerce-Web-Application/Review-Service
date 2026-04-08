@@ -1,21 +1,39 @@
-# Use official Node.js image
-FROM node:20-alpine
-
-# Create app directory
+# Base image
+FROM node:20-alpine AS base
 WORKDIR /app
 
-# Copy package files first
+# Install dependencies stage
+FROM base AS deps
+
+# Copy only package files (for caching)
 COPY package*.json ./
 
-# Install dependencies
-RUN npm install
+# Install ONLY production dependencies
+RUN npm ci --omit=dev
 
-# Copy rest of the app
-COPY . .
+# Production stage
+FROM node:20-alpine AS production
 
-# Expose the port your app uses
-# Change this if your gRPC server uses a different port
-EXPOSE 50051
+WORKDIR /app
 
-# Start the app
-CMD ["node", "grpc_server.js"]
+# Copy package.json (needed for metadata)
+COPY package*.json ./
+
+# Copy node_modules from deps stage
+COPY --from=deps /app/node_modules ./node_modules
+
+# Copy pre-generated gRPC files
+COPY app/generated ./app/generated
+
+# Copy only necessary source files
+COPY src ./src
+COPY grpc_server.js ./
+COPY server.js ./
+COPY start.js ./
+COPY review.handler.js ./
+
+# Expose ports (REST: 8003, gRPC: 50053)
+EXPOSE 8002 50052
+
+# Run app
+CMD ["node", "start.js"]

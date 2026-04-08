@@ -1,4 +1,4 @@
-// source: cart/cart.proto
+// source: app/generated/cart/cart.proto
 /**
  * @fileoverview
  * @enhanceable
@@ -21,8 +21,6 @@ var global = (function() {
   return Function('return this')();
 }.call(null));
 
-var google_protobuf_timestamp_pb = require('google-protobuf/google/protobuf/timestamp_pb.js');
-goog.object.extend(proto, google_protobuf_timestamp_pb);
 goog.exportSymbol('proto.cart.AddItemRequest', null, global);
 goog.exportSymbol('proto.cart.Cart', null, global);
 goog.exportSymbol('proto.cart.CartItem', null, global);
@@ -231,12 +229,12 @@ proto.cart.CartItem.prototype.toObject = function(opt_includeInstance) {
  */
 proto.cart.CartItem.toObject = function(includeInstance, msg) {
   var f, obj = {
-    productId: jspb.Message.getFieldWithDefault(msg, 1, ""),
+    productid: jspb.Message.getFieldWithDefault(msg, 1, ""),
     name: jspb.Message.getFieldWithDefault(msg, 2, ""),
     price: jspb.Message.getFloatingPointFieldWithDefault(msg, 3, 0.0),
     quantity: jspb.Message.getFieldWithDefault(msg, 4, 0),
     image: jspb.Message.getFieldWithDefault(msg, 5, ""),
-    shopId: jspb.Message.getFieldWithDefault(msg, 6, "")
+    shopid: jspb.Message.getFieldWithDefault(msg, 6, "")
   };
 
   if (includeInstance) {
@@ -275,7 +273,7 @@ proto.cart.CartItem.deserializeBinaryFromReader = function(msg, reader) {
     switch (field) {
     case 1:
       var value = /** @type {string} */ (reader.readString());
-      msg.setProductId(value);
+      msg.setProductid(value);
       break;
     case 2:
       var value = /** @type {string} */ (reader.readString());
@@ -295,7 +293,7 @@ proto.cart.CartItem.deserializeBinaryFromReader = function(msg, reader) {
       break;
     case 6:
       var value = /** @type {string} */ (reader.readString());
-      msg.setShopId(value);
+      msg.setShopid(value);
       break;
     default:
       reader.skipField();
@@ -326,7 +324,7 @@ proto.cart.CartItem.prototype.serializeBinary = function() {
  */
 proto.cart.CartItem.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = message.getProductId();
+  f = message.getProductid();
   if (f.length > 0) {
     writer.writeString(
       1,
@@ -361,7 +359,7 @@ proto.cart.CartItem.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
-  f = message.getShopId();
+  f = message.getShopid();
   if (f.length > 0) {
     writer.writeString(
       6,
@@ -372,10 +370,10 @@ proto.cart.CartItem.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * optional string product_id = 1;
+ * optional string productId = 1;
  * @return {string}
  */
-proto.cart.CartItem.prototype.getProductId = function() {
+proto.cart.CartItem.prototype.getProductid = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
 };
 
@@ -384,7 +382,7 @@ proto.cart.CartItem.prototype.getProductId = function() {
  * @param {string} value
  * @return {!proto.cart.CartItem} returns this
  */
-proto.cart.CartItem.prototype.setProductId = function(value) {
+proto.cart.CartItem.prototype.setProductid = function(value) {
   return jspb.Message.setProto3StringField(this, 1, value);
 };
 
@@ -462,10 +460,10 @@ proto.cart.CartItem.prototype.setImage = function(value) {
 
 
 /**
- * optional string shop_id = 6;
+ * optional string shopId = 6;
  * @return {string}
  */
-proto.cart.CartItem.prototype.getShopId = function() {
+proto.cart.CartItem.prototype.getShopid = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 6, ""));
 };
 
@@ -474,7 +472,7 @@ proto.cart.CartItem.prototype.getShopId = function() {
  * @param {string} value
  * @return {!proto.cart.CartItem} returns this
  */
-proto.cart.CartItem.prototype.setShopId = function(value) {
+proto.cart.CartItem.prototype.setShopid = function(value) {
   return jspb.Message.setProto3StringField(this, 6, value);
 };
 
@@ -518,12 +516,10 @@ proto.cart.Cart.prototype.toObject = function(opt_includeInstance) {
  */
 proto.cart.Cart.toObject = function(includeInstance, msg) {
   var f, obj = {
-    userId: jspb.Message.getFieldWithDefault(msg, 1, ""),
+    userid: jspb.Message.getFieldWithDefault(msg, 1, ""),
     itemsList: jspb.Message.toObjectList(msg.getItemsList(),
     proto.cart.CartItem.toObject, includeInstance),
-    totalAmount: jspb.Message.getFloatingPointFieldWithDefault(msg, 3, 0.0),
-    createdAt: (f = msg.getCreatedAt()) && google_protobuf_timestamp_pb.Timestamp.toObject(includeInstance, f),
-    updatedAt: (f = msg.getUpdatedAt()) && google_protobuf_timestamp_pb.Timestamp.toObject(includeInstance, f)
+    totalamount: jspb.Message.getFloatingPointFieldWithDefault(msg, 3, 0.0)
   };
 
   if (includeInstance) {
@@ -562,7 +558,7 @@ proto.cart.Cart.deserializeBinaryFromReader = function(msg, reader) {
     switch (field) {
     case 1:
       var value = /** @type {string} */ (reader.readString());
-      msg.setUserId(value);
+      msg.setUserid(value);
       break;
     case 2:
       var value = new proto.cart.CartItem;
@@ -571,17 +567,7 @@ proto.cart.Cart.deserializeBinaryFromReader = function(msg, reader) {
       break;
     case 3:
       var value = /** @type {number} */ (reader.readDouble());
-      msg.setTotalAmount(value);
-      break;
-    case 4:
-      var value = new google_protobuf_timestamp_pb.Timestamp;
-      reader.readMessage(value,google_protobuf_timestamp_pb.Timestamp.deserializeBinaryFromReader);
-      msg.setCreatedAt(value);
-      break;
-    case 5:
-      var value = new google_protobuf_timestamp_pb.Timestamp;
-      reader.readMessage(value,google_protobuf_timestamp_pb.Timestamp.deserializeBinaryFromReader);
-      msg.setUpdatedAt(value);
+      msg.setTotalamount(value);
       break;
     default:
       reader.skipField();
@@ -612,7 +598,7 @@ proto.cart.Cart.prototype.serializeBinary = function() {
  */
 proto.cart.Cart.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = message.getUserId();
+  f = message.getUserid();
   if (f.length > 0) {
     writer.writeString(
       1,
@@ -627,37 +613,21 @@ proto.cart.Cart.serializeBinaryToWriter = function(message, writer) {
       proto.cart.CartItem.serializeBinaryToWriter
     );
   }
-  f = message.getTotalAmount();
+  f = message.getTotalamount();
   if (f !== 0.0) {
     writer.writeDouble(
       3,
       f
     );
   }
-  f = message.getCreatedAt();
-  if (f != null) {
-    writer.writeMessage(
-      4,
-      f,
-      google_protobuf_timestamp_pb.Timestamp.serializeBinaryToWriter
-    );
-  }
-  f = message.getUpdatedAt();
-  if (f != null) {
-    writer.writeMessage(
-      5,
-      f,
-      google_protobuf_timestamp_pb.Timestamp.serializeBinaryToWriter
-    );
-  }
 };
 
 
 /**
- * optional string user_id = 1;
+ * optional string userId = 1;
  * @return {string}
  */
-proto.cart.Cart.prototype.getUserId = function() {
+proto.cart.Cart.prototype.getUserid = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
 };
 
@@ -666,7 +636,7 @@ proto.cart.Cart.prototype.getUserId = function() {
  * @param {string} value
  * @return {!proto.cart.Cart} returns this
  */
-proto.cart.Cart.prototype.setUserId = function(value) {
+proto.cart.Cart.prototype.setUserid = function(value) {
   return jspb.Message.setProto3StringField(this, 1, value);
 };
 
@@ -710,10 +680,10 @@ proto.cart.Cart.prototype.clearItemsList = function() {
 
 
 /**
- * optional double total_amount = 3;
+ * optional double totalAmount = 3;
  * @return {number}
  */
-proto.cart.Cart.prototype.getTotalAmount = function() {
+proto.cart.Cart.prototype.getTotalamount = function() {
   return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 3, 0.0));
 };
 
@@ -722,82 +692,8 @@ proto.cart.Cart.prototype.getTotalAmount = function() {
  * @param {number} value
  * @return {!proto.cart.Cart} returns this
  */
-proto.cart.Cart.prototype.setTotalAmount = function(value) {
+proto.cart.Cart.prototype.setTotalamount = function(value) {
   return jspb.Message.setProto3FloatField(this, 3, value);
-};
-
-
-/**
- * optional google.protobuf.Timestamp created_at = 4;
- * @return {?proto.google.protobuf.Timestamp}
- */
-proto.cart.Cart.prototype.getCreatedAt = function() {
-  return /** @type{?proto.google.protobuf.Timestamp} */ (
-    jspb.Message.getWrapperField(this, google_protobuf_timestamp_pb.Timestamp, 4));
-};
-
-
-/**
- * @param {?proto.google.protobuf.Timestamp|undefined} value
- * @return {!proto.cart.Cart} returns this
-*/
-proto.cart.Cart.prototype.setCreatedAt = function(value) {
-  return jspb.Message.setWrapperField(this, 4, value);
-};
-
-
-/**
- * Clears the message field making it undefined.
- * @return {!proto.cart.Cart} returns this
- */
-proto.cart.Cart.prototype.clearCreatedAt = function() {
-  return this.setCreatedAt(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.cart.Cart.prototype.hasCreatedAt = function() {
-  return jspb.Message.getField(this, 4) != null;
-};
-
-
-/**
- * optional google.protobuf.Timestamp updated_at = 5;
- * @return {?proto.google.protobuf.Timestamp}
- */
-proto.cart.Cart.prototype.getUpdatedAt = function() {
-  return /** @type{?proto.google.protobuf.Timestamp} */ (
-    jspb.Message.getWrapperField(this, google_protobuf_timestamp_pb.Timestamp, 5));
-};
-
-
-/**
- * @param {?proto.google.protobuf.Timestamp|undefined} value
- * @return {!proto.cart.Cart} returns this
-*/
-proto.cart.Cart.prototype.setUpdatedAt = function(value) {
-  return jspb.Message.setWrapperField(this, 5, value);
-};
-
-
-/**
- * Clears the message field making it undefined.
- * @return {!proto.cart.Cart} returns this
- */
-proto.cart.Cart.prototype.clearUpdatedAt = function() {
-  return this.setUpdatedAt(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.cart.Cart.prototype.hasUpdatedAt = function() {
-  return jspb.Message.getField(this, 5) != null;
 };
 
 
@@ -833,7 +729,7 @@ proto.cart.GetCartRequest.prototype.toObject = function(opt_includeInstance) {
  */
 proto.cart.GetCartRequest.toObject = function(includeInstance, msg) {
   var f, obj = {
-    userId: jspb.Message.getFieldWithDefault(msg, 1, "")
+    userid: jspb.Message.getFieldWithDefault(msg, 1, "")
   };
 
   if (includeInstance) {
@@ -872,7 +768,7 @@ proto.cart.GetCartRequest.deserializeBinaryFromReader = function(msg, reader) {
     switch (field) {
     case 1:
       var value = /** @type {string} */ (reader.readString());
-      msg.setUserId(value);
+      msg.setUserid(value);
       break;
     default:
       reader.skipField();
@@ -903,7 +799,7 @@ proto.cart.GetCartRequest.prototype.serializeBinary = function() {
  */
 proto.cart.GetCartRequest.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = message.getUserId();
+  f = message.getUserid();
   if (f.length > 0) {
     writer.writeString(
       1,
@@ -914,10 +810,10 @@ proto.cart.GetCartRequest.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * optional string user_id = 1;
+ * optional string userId = 1;
  * @return {string}
  */
-proto.cart.GetCartRequest.prototype.getUserId = function() {
+proto.cart.GetCartRequest.prototype.getUserid = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
 };
 
@@ -926,7 +822,7 @@ proto.cart.GetCartRequest.prototype.getUserId = function() {
  * @param {string} value
  * @return {!proto.cart.GetCartRequest} returns this
  */
-proto.cart.GetCartRequest.prototype.setUserId = function(value) {
+proto.cart.GetCartRequest.prototype.setUserid = function(value) {
   return jspb.Message.setProto3StringField(this, 1, value);
 };
 
@@ -963,8 +859,13 @@ proto.cart.AddItemRequest.prototype.toObject = function(opt_includeInstance) {
  */
 proto.cart.AddItemRequest.toObject = function(includeInstance, msg) {
   var f, obj = {
-    userId: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    item: (f = msg.getItem()) && proto.cart.CartItem.toObject(includeInstance, f)
+    userid: jspb.Message.getFieldWithDefault(msg, 1, ""),
+    productid: jspb.Message.getFieldWithDefault(msg, 2, ""),
+    name: jspb.Message.getFieldWithDefault(msg, 3, ""),
+    price: jspb.Message.getFloatingPointFieldWithDefault(msg, 4, 0.0),
+    quantity: jspb.Message.getFieldWithDefault(msg, 5, 0),
+    image: jspb.Message.getFieldWithDefault(msg, 6, ""),
+    shopid: jspb.Message.getFieldWithDefault(msg, 7, "")
   };
 
   if (includeInstance) {
@@ -1003,12 +904,31 @@ proto.cart.AddItemRequest.deserializeBinaryFromReader = function(msg, reader) {
     switch (field) {
     case 1:
       var value = /** @type {string} */ (reader.readString());
-      msg.setUserId(value);
+      msg.setUserid(value);
       break;
     case 2:
-      var value = new proto.cart.CartItem;
-      reader.readMessage(value,proto.cart.CartItem.deserializeBinaryFromReader);
-      msg.setItem(value);
+      var value = /** @type {string} */ (reader.readString());
+      msg.setProductid(value);
+      break;
+    case 3:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setName(value);
+      break;
+    case 4:
+      var value = /** @type {number} */ (reader.readDouble());
+      msg.setPrice(value);
+      break;
+    case 5:
+      var value = /** @type {number} */ (reader.readInt32());
+      msg.setQuantity(value);
+      break;
+    case 6:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setImage(value);
+      break;
+    case 7:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setShopid(value);
       break;
     default:
       reader.skipField();
@@ -1039,29 +959,63 @@ proto.cart.AddItemRequest.prototype.serializeBinary = function() {
  */
 proto.cart.AddItemRequest.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = message.getUserId();
+  f = message.getUserid();
   if (f.length > 0) {
     writer.writeString(
       1,
       f
     );
   }
-  f = message.getItem();
-  if (f != null) {
-    writer.writeMessage(
+  f = message.getProductid();
+  if (f.length > 0) {
+    writer.writeString(
       2,
-      f,
-      proto.cart.CartItem.serializeBinaryToWriter
+      f
+    );
+  }
+  f = message.getName();
+  if (f.length > 0) {
+    writer.writeString(
+      3,
+      f
+    );
+  }
+  f = message.getPrice();
+  if (f !== 0.0) {
+    writer.writeDouble(
+      4,
+      f
+    );
+  }
+  f = message.getQuantity();
+  if (f !== 0) {
+    writer.writeInt32(
+      5,
+      f
+    );
+  }
+  f = message.getImage();
+  if (f.length > 0) {
+    writer.writeString(
+      6,
+      f
+    );
+  }
+  f = message.getShopid();
+  if (f.length > 0) {
+    writer.writeString(
+      7,
+      f
     );
   }
 };
 
 
 /**
- * optional string user_id = 1;
+ * optional string userId = 1;
  * @return {string}
  */
-proto.cart.AddItemRequest.prototype.getUserId = function() {
+proto.cart.AddItemRequest.prototype.getUserid = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
 };
 
@@ -1070,45 +1024,116 @@ proto.cart.AddItemRequest.prototype.getUserId = function() {
  * @param {string} value
  * @return {!proto.cart.AddItemRequest} returns this
  */
-proto.cart.AddItemRequest.prototype.setUserId = function(value) {
+proto.cart.AddItemRequest.prototype.setUserid = function(value) {
   return jspb.Message.setProto3StringField(this, 1, value);
 };
 
 
 /**
- * optional CartItem item = 2;
- * @return {?proto.cart.CartItem}
+ * optional string productId = 2;
+ * @return {string}
  */
-proto.cart.AddItemRequest.prototype.getItem = function() {
-  return /** @type{?proto.cart.CartItem} */ (
-    jspb.Message.getWrapperField(this, proto.cart.CartItem, 2));
+proto.cart.AddItemRequest.prototype.getProductid = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
 };
 
 
 /**
- * @param {?proto.cart.CartItem|undefined} value
- * @return {!proto.cart.AddItemRequest} returns this
-*/
-proto.cart.AddItemRequest.prototype.setItem = function(value) {
-  return jspb.Message.setWrapperField(this, 2, value);
-};
-
-
-/**
- * Clears the message field making it undefined.
+ * @param {string} value
  * @return {!proto.cart.AddItemRequest} returns this
  */
-proto.cart.AddItemRequest.prototype.clearItem = function() {
-  return this.setItem(undefined);
+proto.cart.AddItemRequest.prototype.setProductid = function(value) {
+  return jspb.Message.setProto3StringField(this, 2, value);
 };
 
 
 /**
- * Returns whether this field is set.
- * @return {boolean}
+ * optional string name = 3;
+ * @return {string}
  */
-proto.cart.AddItemRequest.prototype.hasItem = function() {
-  return jspb.Message.getField(this, 2) != null;
+proto.cart.AddItemRequest.prototype.getName = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.cart.AddItemRequest} returns this
+ */
+proto.cart.AddItemRequest.prototype.setName = function(value) {
+  return jspb.Message.setProto3StringField(this, 3, value);
+};
+
+
+/**
+ * optional double price = 4;
+ * @return {number}
+ */
+proto.cart.AddItemRequest.prototype.getPrice = function() {
+  return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 4, 0.0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.cart.AddItemRequest} returns this
+ */
+proto.cart.AddItemRequest.prototype.setPrice = function(value) {
+  return jspb.Message.setProto3FloatField(this, 4, value);
+};
+
+
+/**
+ * optional int32 quantity = 5;
+ * @return {number}
+ */
+proto.cart.AddItemRequest.prototype.getQuantity = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 5, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.cart.AddItemRequest} returns this
+ */
+proto.cart.AddItemRequest.prototype.setQuantity = function(value) {
+  return jspb.Message.setProto3IntField(this, 5, value);
+};
+
+
+/**
+ * optional string image = 6;
+ * @return {string}
+ */
+proto.cart.AddItemRequest.prototype.getImage = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 6, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.cart.AddItemRequest} returns this
+ */
+proto.cart.AddItemRequest.prototype.setImage = function(value) {
+  return jspb.Message.setProto3StringField(this, 6, value);
+};
+
+
+/**
+ * optional string shopId = 7;
+ * @return {string}
+ */
+proto.cart.AddItemRequest.prototype.getShopid = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 7, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.cart.AddItemRequest} returns this
+ */
+proto.cart.AddItemRequest.prototype.setShopid = function(value) {
+  return jspb.Message.setProto3StringField(this, 7, value);
 };
 
 
@@ -1144,8 +1169,8 @@ proto.cart.RemoveItemRequest.prototype.toObject = function(opt_includeInstance) 
  */
 proto.cart.RemoveItemRequest.toObject = function(includeInstance, msg) {
   var f, obj = {
-    userId: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    productId: jspb.Message.getFieldWithDefault(msg, 2, "")
+    userid: jspb.Message.getFieldWithDefault(msg, 1, ""),
+    productid: jspb.Message.getFieldWithDefault(msg, 2, "")
   };
 
   if (includeInstance) {
@@ -1184,11 +1209,11 @@ proto.cart.RemoveItemRequest.deserializeBinaryFromReader = function(msg, reader)
     switch (field) {
     case 1:
       var value = /** @type {string} */ (reader.readString());
-      msg.setUserId(value);
+      msg.setUserid(value);
       break;
     case 2:
       var value = /** @type {string} */ (reader.readString());
-      msg.setProductId(value);
+      msg.setProductid(value);
       break;
     default:
       reader.skipField();
@@ -1219,14 +1244,14 @@ proto.cart.RemoveItemRequest.prototype.serializeBinary = function() {
  */
 proto.cart.RemoveItemRequest.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = message.getUserId();
+  f = message.getUserid();
   if (f.length > 0) {
     writer.writeString(
       1,
       f
     );
   }
-  f = message.getProductId();
+  f = message.getProductid();
   if (f.length > 0) {
     writer.writeString(
       2,
@@ -1237,10 +1262,10 @@ proto.cart.RemoveItemRequest.serializeBinaryToWriter = function(message, writer)
 
 
 /**
- * optional string user_id = 1;
+ * optional string userId = 1;
  * @return {string}
  */
-proto.cart.RemoveItemRequest.prototype.getUserId = function() {
+proto.cart.RemoveItemRequest.prototype.getUserid = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
 };
 
@@ -1249,16 +1274,16 @@ proto.cart.RemoveItemRequest.prototype.getUserId = function() {
  * @param {string} value
  * @return {!proto.cart.RemoveItemRequest} returns this
  */
-proto.cart.RemoveItemRequest.prototype.setUserId = function(value) {
+proto.cart.RemoveItemRequest.prototype.setUserid = function(value) {
   return jspb.Message.setProto3StringField(this, 1, value);
 };
 
 
 /**
- * optional string product_id = 2;
+ * optional string productId = 2;
  * @return {string}
  */
-proto.cart.RemoveItemRequest.prototype.getProductId = function() {
+proto.cart.RemoveItemRequest.prototype.getProductid = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
 };
 
@@ -1267,7 +1292,7 @@ proto.cart.RemoveItemRequest.prototype.getProductId = function() {
  * @param {string} value
  * @return {!proto.cart.RemoveItemRequest} returns this
  */
-proto.cart.RemoveItemRequest.prototype.setProductId = function(value) {
+proto.cart.RemoveItemRequest.prototype.setProductid = function(value) {
   return jspb.Message.setProto3StringField(this, 2, value);
 };
 
@@ -1304,7 +1329,7 @@ proto.cart.ClearCartRequest.prototype.toObject = function(opt_includeInstance) {
  */
 proto.cart.ClearCartRequest.toObject = function(includeInstance, msg) {
   var f, obj = {
-    userId: jspb.Message.getFieldWithDefault(msg, 1, "")
+    userid: jspb.Message.getFieldWithDefault(msg, 1, "")
   };
 
   if (includeInstance) {
@@ -1343,7 +1368,7 @@ proto.cart.ClearCartRequest.deserializeBinaryFromReader = function(msg, reader) 
     switch (field) {
     case 1:
       var value = /** @type {string} */ (reader.readString());
-      msg.setUserId(value);
+      msg.setUserid(value);
       break;
     default:
       reader.skipField();
@@ -1374,7 +1399,7 @@ proto.cart.ClearCartRequest.prototype.serializeBinary = function() {
  */
 proto.cart.ClearCartRequest.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = message.getUserId();
+  f = message.getUserid();
   if (f.length > 0) {
     writer.writeString(
       1,
@@ -1385,10 +1410,10 @@ proto.cart.ClearCartRequest.serializeBinaryToWriter = function(message, writer) 
 
 
 /**
- * optional string user_id = 1;
+ * optional string userId = 1;
  * @return {string}
  */
-proto.cart.ClearCartRequest.prototype.getUserId = function() {
+proto.cart.ClearCartRequest.prototype.getUserid = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
 };
 
@@ -1397,7 +1422,7 @@ proto.cart.ClearCartRequest.prototype.getUserId = function() {
  * @param {string} value
  * @return {!proto.cart.ClearCartRequest} returns this
  */
-proto.cart.ClearCartRequest.prototype.setUserId = function(value) {
+proto.cart.ClearCartRequest.prototype.setUserid = function(value) {
   return jspb.Message.setProto3StringField(this, 1, value);
 };
 

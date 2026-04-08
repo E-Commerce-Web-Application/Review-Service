@@ -1,0 +1,72 @@
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Dependencies (not needed - we use COPY --from)
+node_modules
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Build artifacts
+dist
+build
+coverage
+
+# Logs
+npm-debug.log*
+npm-error.log*
+yarn-error.log*
+.DS_Store
+
+# IDE & Editor
+.vscode
+.idea
+.editorconfig
+.eslintrc
+.eslintignore
+.prettierrc
+*.swp
+*.swo
+
+# Documentation
+README.md
+LICENSE
+CHANGELOG.md
+docs/
+
+# Proto source files (using pre-generated)
+protos/
+
+# Development
+.nodemon.json
+.mocharc.json
+nodemon.json
+
+# Docker files
+Dockerfile
+docker-compose.yml
+docker-compose.yaml
+.dockerignore
+
+# CI/CD
+.github/
+.gitlab-ci.yml
+.circleci/
+Jenkinsfile
+
+# OS files
+Thumbs.db
+.DS_Store
+
+# Test files (if applicable)
+*.test.js
+*.spec.js
+test/
+
+# Temporary files
+*.tmp
+*.temp
+.cache/

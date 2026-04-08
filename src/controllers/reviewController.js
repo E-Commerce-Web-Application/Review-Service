@@ -1,225 +1,182 @@
 const Review = require("../models/Review");
 
-
-// // ➤ Create Review
-// exports.createReview = async (req, res, next) => {
-//   try {
-//     const { productId, rating, comment } = req.body;
-
-//     const review = await Review.create({
-//       productId,
-//     //   userId: req.user.id,
-//       userId: req.body.userId,
-//       rating,
-//       comment
-//     });
-
-//     res.status(201).json(review);
-//   } catch (err) {
-//     if (err.code === 11000) {
-//       return res.status(400).json({
-//         message: "You have already reviewed this product"
-//       });
-//     }
-//     next(err);
-//   }
-// };
+/**
+ * POST /reviews
+ * Body: { product_id, user_id, rating, comment }
+ */
 exports.createReview = async (req, res, next) => {
   try {
-    const { productId, userId, rating, comment } = req.body;
+    const { product_id, user_id, rating, comment } = req.body;
+
+    if (!product_id || !user_id) {
+      return res.status(400).json({
+        message: "product_id and user_id are required",
+      });
+    }
+
+    if (!Number.isInteger(rating) || rating < 1 || rating > 5) {
+      return res.status(400).json({
+        message: "rating must be between 1 and 5",
+      });
+    }
 
     const review = await Review.create({
-      productId,
-      userId,
+      productId: product_id,
+      userId: user_id,
       rating,
-      comment
+      comment,
     });
 
-    res.status(201).json(review);
+    res.status(201).json({
+      id: review._id,
+      product_id: review.productId,
+      user_id: review.userId,
+      rating: review.rating,
+      comment: review.comment,
+      created_at: review.createdAt,
+      updated_at: review.updatedAt,
+    });
   } catch (err) {
     next(err);
   }
 };
 
-// // ➤ Get Reviews by Product (with pagination)
-// exports.getReviewsByProduct = async (req, res, next) => {
-//   try {
-//     const { productId } = req.params;
-//     const page = parseInt(req.query.page) || 1;
-//     const limit = 5;
-//     const skip = (page - 1) * limit;
-
-//     const reviews = await Review.find({ productId })
-//       .sort({ createdAt: -1 })
-//       .skip(skip)
-//       .limit(limit);
-
-//     res.json(reviews);
-//   } catch (err) {
-//     next(err);
-//   }
-// };
-// ➤ Get Reviews by Product (with pagination)
+/**
+ * GET /reviews/:product_id?page=1
+ */
 exports.getReviewsByProduct = async (req, res, next) => {
   try {
+    const { product_id } = req.params;
 
-    const { productId } = req.params;
+    if (!product_id) {
+      return res.status(400).json({
+        message: "product_id is required",
+      });
+    }
 
     const page = parseInt(req.query.page) || 1;
     const limit = 5;
-
     const skip = (page - 1) * limit;
 
-    const reviews = await Review.find({ productId })
+    const reviews = await Review.find({ productId: product_id })
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit);
 
-    res.json(reviews);
+    const formatted = reviews.map((r) => ({
+      id: r._id,
+      product_id: r.productId,
+      user_id: r.userId,
+      rating: r.rating,
+      comment: r.comment,
+      created_at: r.createdAt,
+      updated_at: r.updatedAt,
+    }));
 
+    res.json(formatted);
   } catch (err) {
     next(err);
   }
 };
 
-
-// // ➤ Update Review
-// exports.updateReview = async (req, res, next) => {
-//   try {
-//     const { id } = req.params;
-
-//     const review = await Review.findOneAndUpdate(
-//       { _id: id, userId: req.user.id },
-//       req.body,
-//       { new: true }
-//     );
-
-//     if (!review) {
-//       return res.status(404).json({ message: "Review not found" });
-//     }
-
-//     res.json(review);
-//   } catch (err) {
-//     next(err);
-//   }
-// };
-// ➤ Update Review
+/**
+ * PUT /reviews/:id
+ */
 exports.updateReview = async (req, res, next) => {
   try {
-
     const { id } = req.params;
+    const { rating, comment } = req.body;
+
+    if (rating && (!Number.isInteger(rating) || rating < 1 || rating > 5)) {
+      return res.status(400).json({
+        message: "rating must be between 1 and 5",
+      });
+    }
 
     const review = await Review.findByIdAndUpdate(
       id,
-      req.body,
+      {
+        ...(rating && { rating }),
+        ...(comment && { comment }),
+        updatedAt: new Date(),
+      },
       { new: true }
     );
 
     if (!review) {
       return res.status(404).json({
-        message: "Review not found"
+        message: "Review not found",
       });
     }
 
-    res.json(review);
-
+    res.json({
+      id: review._id,
+      product_id: review.productId,
+      user_id: review.userId,
+      rating: review.rating,
+      comment: review.comment,
+      created_at: review.createdAt,
+      updated_at: review.updatedAt,
+    });
   } catch (err) {
     next(err);
   }
 };
 
-
-// // ➤ Delete Review
-// exports.deleteReview = async (req, res, next) => {
-//   try {
-//     const { id } = req.params;
-
-//     const review = await Review.findOneAndDelete({
-//       _id: id,
-//       userId: req.user.id
-//     });
-
-//     if (!review) {
-//       return res.status(404).json({ message: "Review not found" });
-//     }
-
-//     res.json({ message: "Review deleted" });
-//   } catch (err) {
-//     next(err);
-//   }
-// };
-
-// ➤ Delete Review
+/**
+ * DELETE /reviews/:id
+ */
 exports.deleteReview = async (req, res, next) => {
   try {
-
     const { id } = req.params;
 
     const review = await Review.findByIdAndDelete(id);
 
     if (!review) {
       return res.status(404).json({
-        message: "Review not found"
+        message: "Review not found",
       });
     }
 
     res.json({
-      message: "Review deleted"
+      message: "review_deleted",
     });
-
   } catch (err) {
     next(err);
   }
 };
 
-
-// // ➤ Get Average Rating
-// exports.getAverageRating = async (req, res, next) => {
-//   try {
-//     const { productId } = req.params;
-
-//     const result = await Review.aggregate([
-//       { $match: { productId } },
-//       {
-//         $group: {
-//           _id: "$productId",
-//           avgRating: { $avg: "$rating" },
-//           totalReviews: { $sum: 1 }
-//         }
-//       }
-//     ]);
-
-//     res.json(result[0] || { avgRating: 0, totalReviews: 0 });
-//   } catch (err) {
-//     next(err);
-//   }
-// };
-
-
-// ➤ Get Average Rating
+/**
+ * GET /reviews/average/:product_id
+ */
 exports.getAverageRating = async (req, res, next) => {
   try {
+    const { product_id } = req.params;
 
-    const { productId } = req.params;
+    if (!product_id) {
+      return res.status(400).json({
+        message: "product_id is required",
+      });
+    }
 
     const result = await Review.aggregate([
-      { $match: { productId } },
+      { $match: { productId: product_id } },
       {
         $group: {
           _id: "$productId",
           avgRating: { $avg: "$rating" },
-          totalReviews: { $sum: 1 }
-        }
-      }
+          totalReviews: { $sum: 1 },
+        },
+      },
     ]);
 
-    res.json(
-      result[0] || {
-        avgRating: 0,
-        totalReviews: 0
-      }
-    );
+    const data = result[0];
 
+    res.json({
+      product_id,
+      avg_rating: data ? data.avgRating : 0,
+      total_reviews: data ? data.totalReviews : 0,
+    });
   } catch (err) {
     next(err);
   }
