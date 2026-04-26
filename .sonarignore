@@ -1,0 +1,11 @@
+# Ignore generated protobuf/grpc code
+**/app/generated/**
+
+# Ignore Kubernetes manifests and local env files
+**/k8s/**
+**/node_modules/**
+**/.git/**
+.env
+
+# Ignore docs and other repo metadata
+**/*.md

@@ -1,5 +1,7 @@
 // GENERATED CODE -- DO NOT EDIT!
 
+/* eslint-disable */
+
 'use strict';
 var grpc = require('@grpc/grpc-js');
 var app_generated_cart_cart_pb = require('../../../app/generated/cart/cart_pb.js');
