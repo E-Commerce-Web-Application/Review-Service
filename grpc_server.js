@@ -9,8 +9,11 @@ function startGRPCServer() {
 
   server.addService(ReviewServiceService, {
     createReview: reviewHandlers.createReview,
+    createShopReview: reviewHandlers.createShopReview,
     getReviewsByProduct: reviewHandlers.getReviewsByProduct,
+    getReviewsByShopId: reviewHandlers.getReviewsByShopId,
     getAverageRating: reviewHandlers.getAverageRating,
+    getAverageRatingByShopId: reviewHandlers.getAverageRatingByShopId,
     updateReview: reviewHandlers.updateReview,
     deleteReview: reviewHandlers.deleteReview,
   });
